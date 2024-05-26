@@ -38,7 +38,7 @@ class ExpoChannel
      *
      * @param  mixed  $notifiable
      * @param  \Illuminate\Notifications\Notification  $notification
-     * @return void
+     * @return mixed|void
      *
      * @throws CouldNotSendNotification
      */
@@ -50,11 +50,19 @@ class ExpoChannel
         $interests = [$interest];
 
         try {
-            $this->expo->notify(
+            $expoResponse = $this->expo->notify(
                 $interests,
                 $notification->toExpoPush($notifiable)->toArray(),
                 config('exponent-push-notifications.debug')
             );
+
+            // if ($expoResponse->status === 'error') {
+            //     $this->events->dispatch(
+            //         new NotificationFailed($notifiable, $notification, 'expo-push-notifications', $expoResponse->message)
+            //     );
+            // }
+
+            return $expoResponse;
         } catch (ExpoException $e) {
             $this->events->dispatch(
                 new NotificationFailed($notifiable, $notification, 'expo-push-notifications', $e->getMessage())
