@@ -7,6 +7,7 @@ use ExponentPhpSDK\Expo;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Notifications\Events\NotificationFailed;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Log;
 use NotificationChannels\ExpoPushNotifications\Exceptions\CouldNotSendNotification;
 
 class ExpoChannel
@@ -62,6 +63,14 @@ class ExpoChannel
             //     );
             // }
 
+            Log::info(
+                'Expo response',
+                [
+                    'data' => $expoResponse,
+                    'interest' => $interest,
+                ]
+            );
+
             return $expoResponse;
         } catch (ExpoException $e) {
             $this->events->dispatch(
@@ -80,6 +89,6 @@ class ExpoChannel
     {
         $class = str_replace('\\', '.', get_class($notifiable));
 
-        return $class.'.'.$notifiable->getKey();
+        return $class . '.' . $notifiable->getKey();
     }
 }
